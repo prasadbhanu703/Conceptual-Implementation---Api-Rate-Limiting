@@ -20,23 +20,45 @@ for(let i=0; i<10; i++) {
 }
 app.get("/api/posts" , (req, res) => {
 
-    res.send(defaultData);
+    res.status(200).send(defaultData);
 });
 
-app.get("/api/posts/:id", (req,res) => {
-    const length = req.params.id;
-    if(length > 20) {
+let count = 0;
 
-    res.send(defaultData);
+app.get("/api/posts/:id", (req,res) => {
+    
+    const length = req.params.id;
+    count++;
+    console.log(count,"this is the count");
+
+    const timeInterval = setInterval(() => {
+        count = 0;
+
+    } , 30 * 1000)
+
+    if(count > 5) {
+        res.status(429).send({message : "Exceed Number of API Calls"});
+    }
+        else {
+    if(length > 20) {
+        res.status(200).send(defaultData);
     } 
     else {
+
         const newData = [];
     for(let i=0; i<length; i++) {
         newData[i] = data[i];
     }
-
     res.send(newData);
     }
+}
+
+    // if(timeInterval === (30 * 1000)) {
+    //     clearInterval(timeInterval);
+    //     count = 0;
+    // }
+
+    
 }) 
 
 app.listen(port, () => console.log(`App listening on port ${port}!`))
