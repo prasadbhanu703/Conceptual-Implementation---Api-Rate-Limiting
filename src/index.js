@@ -18,12 +18,12 @@ let numOfApiCalls = 0;
 let initialMax = null;
 
 app.get("/api/posts", (req,res) => {
+
     if(numOfApiCalls >= 5) {
-        res.status(429).send({message: "Exceed number of api calls"});
+        res.status(429).send({message: "Exceed number of API calls"});
         return;
     }
 
-    else {
     const parsedMax = Number(req.query.max || 10);
     const max = parsedMax > 20 ? 10 : parsedMax;
     let finalMax = max;
@@ -46,7 +46,7 @@ app.get("/api/posts", (req,res) => {
     else {
         numOfApiCalls++;
     }
-}
+
 });
 
 
