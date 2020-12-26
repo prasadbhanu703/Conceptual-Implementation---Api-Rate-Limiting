@@ -14,52 +14,39 @@ app.use(bodyParser.urlencoded({ extended: false }))
 
 app.use(bodyParser.json())
 // your code goes here
-const defaultData = [];
-for(let i=0; i<10; i++) {
-    defaultData[i] = data[i];
-}
-app.get("/api/posts" , (req, res) => {
+let numOfApiCalls = 0;
+let initialMax = null;
 
-    res.status(200).send(defaultData);
-});
-
-let count = 0;
-
-app.get("/api/posts/:id", (req,res) => {
-    
-    const length = req.params.id;
-    count++;
-    console.log(count,"this is the count");
-
-    const timeInterval = setInterval(() => {
-        count = 0;
-
-    } , 30 * 1000)
-
-    if(count > 5) {
-        res.status(429).send({message : "Exceed Number of API Calls"});
+app.get("/api/posts", (req,res) => {
+    if(numOfApiCalls >= 5) {
+        res.status(429).send({message: "Exceed number of api calls"});
+        return;
     }
-        else {
-    if(length > 20) {
-        res.status(200).send(defaultData);
-    } 
+
+    const parsedMax = Number(req.query.max || 10);
+    const max = parsedMax > 20 ? 10 : parsedMax;
+    let finalMax = max;
+    
+    if(initialMax !== null) {
+        finalMax = Math.min(finalMax, initialMax);
+    }
+    
+    const topMax = data.filter((value, index) => index < finalMax);
+    res.send(topMax);
+
+    if(initialMax === null) {
+        initialMax = max;
+        numOfApiCalls++;
+        setTimeout(() => {
+            initialMax = null;
+            numOfApiCalls = 0;
+        }, 30*1000);
+    }
     else {
-
-        const newData = [];
-    for(let i=0; i<length; i++) {
-        newData[i] = data[i];
+        numOfApiCalls++;
     }
-    res.send(newData);
-    }
-}
+})
 
-    // if(timeInterval === (30 * 1000)) {
-    //     clearInterval(timeInterval);
-    //     count = 0;
-    // }
-
-    
-}) 
 
 app.listen(port, () => console.log(`App listening on port ${port}!`))
 
