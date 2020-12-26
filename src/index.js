@@ -23,6 +23,7 @@ app.get("/api/posts", (req,res) => {
         return;
     }
 
+    else {
     const parsedMax = Number(req.query.max || 10);
     const max = parsedMax > 20 ? 10 : parsedMax;
     let finalMax = max;
@@ -45,7 +46,8 @@ app.get("/api/posts", (req,res) => {
     else {
         numOfApiCalls++;
     }
-})
+}
+});
 
 
 app.listen(port, () => console.log(`App listening on port ${port}!`))
